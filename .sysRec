@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Root name="ConstantActuator">
+    <Child name="ConstantActuator.PermeanceActuator" desc="Detailed actuator model for rough magnetic design of actuator and system simulation" is_package="0" />
+</Root>
