@@ -7,21 +7,7 @@
       ref="multipleTable"
       style="width: 100%;">
 
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <!-- <div>444444444444444444</div> -->
-          <el-table :data="props.Files"
-            :show-header=false>
-            <el-table-column label="Ãû³Æ"
-              prop="Name"
-              min-width="180"
-              :show-overflow-tooltip=true>
-
-            </el-table-column>
-          </el-table>
-        </template>
-      </el-table-column>
-
+    
       <!-- <el-table-column label="±àºÅ"
         prop="Commits.Sha1"
         min-width="180"
@@ -154,12 +140,7 @@ export default {
         return "fork²Ö¿â"
       }
 
-    },
-    toModel(row) {
-      this.$store.dispatch('sendModelId', row.model_id);
-      this.$store.dispatch('sendTreeModelId', row.model_id);
-      this.$router.push({ path: '/model/packageDiagram' });
-    },
+
 
   },
 
@@ -173,6 +154,22 @@ export default {
     this.$http.get('corporate/syslink/test/ConstantActuator/commit/25e65425b8dbf84b15a511a77eda65a76066c469')
 
   }
+
+  <el-table-column type="expand">
+        <template slot-scope="props">
+          <!-- <div>444444444444444444</div> -->
+          <el-table :data="props.Files"
+            :show-header=false>
+            <el-table-column label="Ãû³Æ"
+              prop="Name"
+              min-width="180"
+              :show-overflow-tooltip=true>
+
+            </el-table-column>
+          </el-table>
+        </template>
+      </el-table-column>
+
 }
 
 </script>
