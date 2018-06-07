@@ -8,133 +8,7 @@
                   <el-tooltip class="item"
                     effect="dark"
                     :content="props.row.Addition+'Addition&'+props.row.Deletion+'Deletion'"
-                    placement="top">
-                    <span class="status-bar">
-                      <span :style="{'background-color':'#55a532',width:statusBar(props.row.Addition,props.row.Deletion),'float':'left',height:'12px'}"></span>
-                      <span></span>
-                    </span>
-                  </el-tooltip>
-                  <span>-{{props.row.Deletion}}</span>
-                </span>
-              </template>
-
-            </el-table-column>
-
-          </el-table>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="编号"
-        prop="UserCommit.ID"
-        min-width="120"
-        :show-overflow-tooltip=true>
-
-      </el-table-column>
-
-      <el-table-column label="用户"
-        prop="UserCommit.Author.Name"
-        min-width="120"
-        :show-overflow-tooltip=true>
-
-      </el-table-column>
-
-      <el-table-column label="备注"
-        prop="UserCommit.CommitMessage"
-        min-width="120"
-        :show-overflow-tooltip=true>
-
-      </el-table-column>
-
-      <!-- <el-table-column label="操作"
-        prop="opType"
-        min-width="180"
-        :formatter="typeFormatter">
-
-      </el-table-column> -->
-
-      <el-table-column min-width="180"
-        label="日期"
-        prop="UserCommit.Committer.When"
-        :show-overflow-tooltip=true>
-
-      </el-table-column>
-
-    </el-table>
-
-  </section>
-</template>
-
-<script>
-
-export default {
-
-  name: 'repoHistory',
-  props: {
-    modelId: {
-      type: Number
-    }
-  },
-
-  data() {
-    return {
-      actions: []
-    }
-  },
-  methods: {
-    // getActions() {
-    //   this.$http.post('api/action/getRepoAction?modelId=' + this.modelId).then((res) => {
-    //     const contents = [];
-    //     for (const action of res.data.actions) {
-    //       let ac = JSON.stringify(action.content)
-
-    //     }
-    //     console.log(contents)
-    //     this.actions = res.data.actions;
-    //   }).catch(function (error) {
-    //     console.log(error);
-    //   });
-
-    // },
-    statusBar(Addition, Deletion) {
-      if (Addition > 0 && Deletion == 0) {
-        return '100%'
-      }
-      if (Addition == 0 && Deletion > 0) {
-        return '0%'
-      }
-      if (Addition > 0 && Deletion > 0) {
-        return Addition / (Addition + Deletion) * 100 + '%'
-      }
-
-    },
-    dateFormatter: function (row, column) {
-      if (row.createdUnix != null) {
-        return moment(moment.unix(row.createdUnix)).format('YYYY-MM-DD  HH:mm');
-      }
-
-
-    },
-    commitTypeCss(type) {
-
-      if (type == 1) {
-        return 'add'
-      }
-      if (type == 2) {
-        return 'modified '
-      }
-      if (type == 3) {
-        return 'delete '
-      }
-      if (type == 4) {
-        return 'rename '
-      }
-    },
-    typeFormatter(row, column) {
-      if (row.opType != null) {
-        if (row.opType == 1) {
-          return "创建仓库";
-        }
-        if (row.opType == 2) {
+        
           return "重命名仓库";
         }
         // if (row.opType == 3) {
@@ -519,4 +393,109 @@ export default {
 }
 </style>
 }
+
+
+const path = require('path');
+const webpack = require('webpack');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+
+const config = require('./config');
+
+module.exports = {
+  entry: {
+    app: ['./src/index.js']
+  },
+  output: {
+    path: path.resolve(process.cwd(), './lib'),
+    publicPath: '/dist/',
+    filename: 'index.js',
+    chunkFilename: '[id].js',
+    libraryTarget: 'umd',
+    library: 'ELEMENT',
+    umdNamedDefine: true
+  },
+  resolve: {
+    extensions: ['.js', '.vue', '.json'],
+    alias: config.alias
+  },
+  externals: {
+    vue: config.vue
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(jsx?|babel|es6)$/,
+        include: process.cwd(),
+        exclude: config.jsexclude,
+        loader: 'babel-loader'
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          preserveWhitespace: false
+        }
+      },
+      {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
+        test: /\.css$/,
+        loaders: ['style-loader', 'css-loader', 'postcss-loader']
+      },
+      {
+        test: /\.scss$/,
+        loaders: ['style-loader', 'css-loader', 'sass-loader']
+      },
+      {
+        test: /\.html$/,
+        loader: 'html-loader?minimize=false'
+      },
+      {
+        test: /\.otf|ttf|woff2?|eot(\?\S*)?$/,
+        loader: 'url-loader',
+        query: {
+          limit: 10000,
+          name: path.posix.join('static', '[name].[hash:7].[ext]')
+        }
+      },
+      {
+        test: /\.svg(\?\S*)?$/,
+        loader: 'url-loader',
+        query: {
+          limit: 10000,
+          name: path.posix.join('static', '[name].[hash:7].[ext]')
+        }
+      },
+      {
+        test: /\.(gif|png|jpe?g)(\?\S*)?$/,
+        loader: 'url-loader',
+        query: {
+          limit: 10000,
+          name: path.posix.join('static', '[name].[hash:7].[ext]')
+        }
+      }
+    ]
+  },
+  plugins: [
+    new ProgressBarPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      },
+      output: {
+        comments: false
+      },
+      sourceMap: false
+    }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true
+    })
+  ]
+};
+
 </style>

@@ -1,92 +1,4 @@
-<template>
-  <section>
-
-    <el-table :data="actions"
-      highlight-current-row
-      stripe
-      ref="multipleTable"
-      style="width: 100%;"
-      id="h-table">
-
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-table :data="props.row.DiffFiles"
-            :show-header=false>
-            <el-table-column label="类型"
-              prop="Name"
-              width="40"
-              :show-overflow-tooltip=true>
-
-              <template slot-scope="props">
-                <el-tooltip class="item"
-                  effect="dark"
-                  :content="commitTypeCss(props.row.Type)"
-                  placement="top">
-                  <span :class="[commitTypeCss(props.row.Type),'type-box']"></span>
-                </el-tooltip>
-              </template>
-
-            </el-table-column>
-            <el-table-column label="名称"
-              prop="Name"
-              min-width="100"
-              :show-overflow-tooltip=true>
-
-            </el-table-column>
-
-            <el-table-column label="变更"
-              width="120">
-              <template slot-scope="props">
-                <span style="float:right;">
-                  <span>+{{props.row.Addition}}</span>
-                  <el-tooltip class="item"
-                    effect="dark"
-                    :content="props.row.Addition+'Addition&'+props.row.Deletion+'Deletion'"
-                    placement="top">
-                    <span class="status-bar">
-                      <span :style="{'background-color':'#55a532',width:statusBar(props.row.Addition,props.row.Deletion),'float':'left',height:'12px'}"></span>
-                      <span></span>
-                    </span>
-                  </el-tooltip>
-                  <span>-{{props.row.Deletion}}</span>
-                </span>
-              </template>
-
-            </el-table-column>
-
-          </el-table>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="编号"
-        prop="UserCommit.ID"
-        min-width="120"
-        :show-overflow-tooltip=true>
-
-      </el-table-column>
-
-      <el-table-column label="用户"
-        prop="UserCommit.Author.Name"
-        min-width="120"
-        :show-overflow-tooltip=true>
-
-      </el-table-column>
-
-      <el-table-column label="备注"
-        prop="UserCommit.CommitMessage"
-        min-width="120"
-        :show-overflow-tooltip=true>
-
-      </el-table-column>
-
-      <!-- <el-table-column label="操作"
-        prop="opType"
-        min-width="180"
-        :formatter="typeFormatter">
-
-      </el-table-column> -->
-
-      <el-table-column min-width="180"
+ground-c
         label="日期"
         prop="UserCommit.Committer.When"
         :show-overflow-tooltip=true>
@@ -324,82 +236,7 @@ export default {
         if (row.opType == 1) {
           return "创建仓库";
         }
-        if (row.opType == 2) {
-          return "重命名仓库";
-        }
-        // if (row.opType == 3) {
-
-        // }
-        // if (row.opType == 4) {
-
-        // }
-        // if (row.opType == 5) {
-        return "提交代码";
-      }
-      // if (row.opType == 6) {
-
-      // }
-      // if (row.opType == 7) {
-
-      // }
-      if (row.opType == 8) {
-        return "转移仓库";
-      }
-      // if (row.opType == 9) {
-
-      // }
-      // if (row.opType == 10) {
-
-      // }
-      // if (row.opType == 11) {
-
-      // }
-      // if (row.opType == 12) {
-
-      // }
-      // if (row.opType == 13) {
-
-      // }
-      // if (row.opType == 14) {
-
-      // }
-      // if (row.opType == 15) {
-
-      // }
-      if (row.opType == 16) {
-        return "创建分支:" + row.ref_name;
-      }
-      if (row.opType == 17) {
-        return "删除分支:" + row.ref_name;
-      }
-      // if (row.opType == 18) {
-
-      // }
-      if (row.opType == 19) {
-        return "fork仓库"
-      }
-
-    },
-    toModel(row) {
-      this.$store.dispatch('sendModelId', row.model_id);
-      this.$store.dispatch('sendTreeModelId', row.model_id);
-      this.$router.push({ path: '/model/packageDiagram' });
-    },
-
-  },
-
-  mounted() {
-    // this.getActions();
-    this.$http.get('corporate/syslink/test/ConstantActuator/commits/master').then((res) => {
-      this.actions = res.data.actions;
-    })
-  }
-}
-
-</script>
-
-<style >
-.type-box {
+        if (row.opType ==
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -431,5 +268,110 @@ export default {
 #h-table .el-table__expanded-cell[class*="cell"] {
   padding: 0px;
 }
+
+
+const path = require('path');
+const webpack = require('webpack');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+
+const config = require('./config');
+
+module.exports = {
+  entry: {
+    app: ['./src/index.js']
+  },
+  output: {
+    path: path.resolve(process.cwd(), './lib'),
+    publicPath: '/dist/',
+    filename: 'index.js',
+    chunkFilename: '[id].js',
+    libraryTarget: 'umd',
+    library: 'ELEMENT',
+    umdNamedDefine: true
+  },
+  resolve: {
+    extensions: ['.js', '.vue', '.json'],
+    alias: config.alias
+  },
+  externals: {
+    vue: config.vue
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(jsx?|babel|es6)$/,
+        include: process.cwd(),
+        exclude: config.jsexclude,
+        loader: 'babel-loader'
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          preserveWhitespace: false
+        }
+      },
+      {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
+        test: /\.css$/,
+        loaders: ['style-loader', 'css-loader', 'postcss-loader']
+      },
+      {
+        test: /\.scss$/,
+        loaders: ['style-loader', 'css-loader', 'sass-loader']
+      },
+      {
+        test: /\.html$/,
+        loader: 'html-loader?minimize=false'
+      },
+      {
+        test: /\.otf|ttf|woff2?|eot(\?\S*)?$/,
+        loader: 'url-loader',
+        query: {
+          limit: 10000,
+          name: path.posix.join('static', '[name].[hash:7].[ext]')
+        }
+      },
+      {
+        test: /\.svg(\?\S*)?$/,
+        loader: 'url-loader',
+        query: {
+          limit: 10000,
+          name: path.posix.join('static', '[name].[hash:7].[ext]')
+        }
+      },
+      {
+        test: /\.(gif|png|jpe?g)(\?\S*)?$/,
+        loader: 'url-loader',
+        query: {
+          limit: 10000,
+          name: path.posix.join('static', '[name].[hash:7].[ext]')
+        }
+      }
+    ]
+  },
+  plugins: [
+    new ProgressBarPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      },
+      output: {
+        comments: false
+      },
+      sourceMap: false
+    }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true
+    })
+  ]
+};
+
 </style>
 </style>
