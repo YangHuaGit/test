@@ -154,6 +154,162 @@ export default {
         return 'add'
       }
       if (type == 2) {
+<template>
+  <section>
+
+    <el-table :data="actions"
+      highlight-current-row
+      stripe
+      ref="multipleTable"
+      style="width: 100%;"
+      id="h-table">
+
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-table :data="props.row.DiffFiles"
+            :show-header=false>
+            <el-table-column label="类型"
+              prop="Name"
+              width="40"
+              :show-overflow-tooltip=true>
+
+              <template slot-scope="props">
+                <el-tooltip class="item"
+                  effect="dark"
+                  :content="commitTypeCss(props.row.Type)"
+                  placement="top">
+                  <span :class="[commitTypeCss(props.row.Type),'type-box']"></span>
+                </el-tooltip>
+              </template>
+
+            </el-table-column>
+            <el-table-column label="名称"
+              prop="Name"
+              min-width="100"
+              :show-overflow-tooltip=true>
+
+            </el-table-column>
+
+            <el-table-column label="变更"
+              width="120">
+              <template slot-scope="props">
+                <span style="float:right;">
+                  <span>+{{props.row.Addition}}</span>
+                  <el-tooltip class="item"
+                    effect="dark"
+                    :content="props.row.Addition+'Addition&'+props.row.Deletion+'Deletion'"
+                    placement="top">
+                    <span class="status-bar">
+                      <span :style="{'background-color':'#55a532',width:statusBar(props.row.Addition,props.row.Deletion),'float':'left',height:'12px'}"></span>
+                      <span></span>
+                    </span>
+                  </el-tooltip>
+                  <span>-{{props.row.Deletion}}</span>
+                </span>
+              </template>
+
+            </el-table-column>
+
+          </el-table>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="编号"
+        prop="UserCommit.ID"
+        min-width="120"
+        :show-overflow-tooltip=true>
+
+      </el-table-column>
+
+      <el-table-column label="用户"
+        prop="UserCommit.Author.Name"
+        min-width="120"
+        :show-overflow-tooltip=true>
+
+      </el-table-column>
+
+      <el-table-column label="备注"
+        prop="UserCommit.CommitMessage"
+        min-width="120"
+        :show-overflow-tooltip=true>
+
+      </el-table-column>
+
+      <!-- <el-table-column label="操作"
+        prop="opType"
+        min-width="180"
+        :formatter="typeFormatter">
+
+      </el-table-column> -->
+
+      <el-table-column min-width="180"
+        label="日期"
+        prop="UserCommit.Committer.When"
+        :show-overflow-tooltip=true>
+
+      </el-table-column>
+
+    </el-table>
+
+  </section>
+</template>
+
+<script>
+
+export default {
+
+  name: 'repoHistory',
+  props: {
+    modelId: {
+      type: Number
+    }
+  },
+
+  data() {
+    return {
+      actions: []
+    }
+  },
+  methods: {
+    // getActions() {
+    //   this.$http.post('api/action/getRepoAction?modelId=' + this.modelId).then((res) => {
+    //     const contents = [];
+    //     for (const action of res.data.actions) {
+    //       let ac = JSON.stringify(action.content)
+
+    //     }
+    //     console.log(contents)
+    //     this.actions = res.data.actions;
+    //   }).catch(function (error) {
+    //     console.log(error);
+    //   });
+
+    // },
+    statusBar(Addition, Deletion) {
+      if (Addition > 0 && Deletion == 0) {
+        return '100%'
+      }
+      if (Addition == 0 && Deletion > 0) {
+        return '0%'
+      }
+      if (Addition > 0 && Deletion > 0) {
+        return Addition / (Addition + Deletion) * 100 + '%'
+      }
+
+    },
+    dateFormatter: function (row, column) {
+      if (row.createdUnix != null) {
+        return moment(moment.unix(row.createdUnix)).format('YYYY-MM-DD  HH:mm');
+      }
+
+
+    },
+    commitTypeCss(type) {
+
+      if (type == 1) {
+        return 'add'
+      }
+      if (type == 2) {
         return 'modified '
       }
       if (type == 3) {
@@ -275,4 +431,5 @@ export default {
 #h-table .el-table__expanded-cell[class*="cell"] {
   padding: 0px;
 }
+</style>
 </style>
